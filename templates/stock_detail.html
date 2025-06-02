@@ -1,0 +1,490 @@
+{% extends "base.html" %}
+
+{% block title %}{{ symbol }} - Stock Detail{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    {% if stock_info %}
+        <!-- Stock Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card border-0 shadow">
+                    <div class="card-body p-4">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <h1 class="display-6 fw-bold mb-1">{{ symbol }}</h1>
+                                <p class="text-muted mb-3">{{ stock_info.get('exchange', 'Stock Exchange') }}</p>
+                                
+                                <div class="d-flex align-items-center">
+                                    <h2 class="text-primary mb-0 me-4">
+                                        ${{ "%.2f"|format(stock_info.get('close', 0)) }}
+                                    </h2>
+                                    {% if stock_info.get('change_percent') is not none %}
+                                        <div class="change-indicator {{ 'text-success' if stock_info.change_percent >= 0 else 'text-danger' }}">
+                                            <span class="fw-bold">
+                                                {{ '+' if stock_info.change_percent >= 0 else '' }}${{ "%.2f"|format(stock_info.get('change_amount', 0)) }}
+                                            </span>
+                                            <span class="ms-2">
+                                                ({{ '+' if stock_info.change_percent >= 0 else '' }}{{ "%.2f"|format(stock_info.change_percent) }}%)
+                                            </span>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 text-md-end">
+                                <div class="btn-group mb-2" role="group">
+                                    <a href="{{ url_for('stock_detail', symbol=symbol, data_type='latest') }}" 
+                                       class="btn btn-outline-primary btn-sm">Latest</a>
+                                    <a href="{{ url_for('stock_detail', symbol=symbol, data_type='historical') }}" 
+                                       class="btn btn-outline-primary btn-sm">Historical</a>
+                                    <button type="button" class="btn btn-outline-success btn-sm" 
+                                            onclick="trackStock('{{ symbol }}')" id="trackBtn">
+                                        <i class="fas fa-star me-1"></i>Track Stock
+                                    </button>
+                                    <a href="{{ url_for('search') }}" 
+                                       class="btn btn-outline-secondary btn-sm">New Search</a>
+                                </div>
+                                <br>
+                                <small class="text-muted">
+                                    Last updated: {{ stock_info.get('date', 'N/A') }}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Metrics -->
+        <div class="row mb-4">
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-arrow-up text-success fa-2x mb-2"></i>
+                        <h6 class="card-title">High</h6>
+                        <h4 class="text-success">${{ "%.2f"|format(stock_info.get('high', 0)) }}</h4>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-arrow-down text-danger fa-2x mb-2"></i>
+                        <h6 class="card-title">Low</h6>
+                        <h4 class="text-danger">${{ "%.2f"|format(stock_info.get('low', 0)) }}</h4>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-door-open text-primary fa-2x mb-2"></i>
+                        <h6 class="card-title">Open</h6>
+                        <h4 class="text-primary">${{ "%.2f"|format(stock_info.get('open', 0)) }}</h4>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-chart-bar text-warning fa-2x mb-2"></i>
+                        <h6 class="card-title">Volume</h6>
+                        <h4 class="text-warning">
+                            {% set volume = stock_info.get('volume', 0) %}
+                            {% if volume >= 1000000 %}
+                                {{ "%.1f"|format(volume / 1000000) }}M
+                            {% elif volume >= 1000 %}
+                                {{ "%.1f"|format(volume / 1000) }}K
+                            {% else %}
+                                {{ volume }}
+                            {% endif %}
+                        </h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        {% if chart_data %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card border-0 shadow">
+                    <div class="card-header bg-white border-bottom-0 py-3">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-chart-line me-2"></i>Price Chart
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container" style="position: relative; height: 400px;">
+                            <canvas id="priceChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card border-0 shadow">
+                    <div class="card-header bg-white border-bottom-0 py-3">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-chart-bar me-2"></i>Volume Chart
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container" style="position: relative; height: 300px;">
+                            <canvas id="volumeChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Historical Data Table -->
+        {% if historical_data %}
+        <div class="row">
+            <div class="col-12">
+                <div class="card border-0 shadow">
+                    <div class="card-header bg-white border-bottom-0 py-3">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-table me-2"></i>Historical Data
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Open</th>
+                                        <th>High</th>
+                                        <th>Low</th>
+                                        <th>Close</th>
+                                        <th>Volume</th>
+                                        <th>Change %</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for data in historical_data[:20] %}
+                                    <tr>
+                                        <td class="fw-semibold">{{ data.get('date', '')[:10] }}</td>
+                                        <td>${{ "%.2f"|format(data.get('open', 0)) }}</td>
+                                        <td class="text-success">${{ "%.2f"|format(data.get('high', 0)) }}</td>
+                                        <td class="text-danger">${{ "%.2f"|format(data.get('low', 0)) }}</td>
+                                        <td class="fw-semibold">${{ "%.2f"|format(data.get('close', 0)) }}</td>
+                                        <td class="text-muted">
+                                            {% set volume = data.get('volume', 0) %}
+                                            {% if volume >= 1000000 %}
+                                                {{ "%.1f"|format(volume / 1000000) }}M
+                                            {% elif volume >= 1000 %}
+                                                {{ "%.1f"|format(volume / 1000) }}K
+                                            {% else %}
+                                                {{ volume }}
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% set open_price = data.get('open', 0) %}
+                                            {% set close_price = data.get('close', 0) %}
+                                            {% if open_price and open_price != 0 %}
+                                                {% set change_pct = ((close_price - open_price) / open_price) * 100 %}
+                                                <span class="{{ 'text-success' if change_pct >= 0 else 'text-danger' }}">
+                                                    {{ '+' if change_pct >= 0 else '' }}{{ "%.2f"|format(change_pct) }}%
+                                                </span>
+                                            {% else %}
+                                                <span class="text-muted">N/A</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+    {% else %}
+        <!-- No Data Found -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card border-0 shadow">
+                    <div class="card-body text-center py-5">
+                        <i class="fas fa-exclamation-triangle fa-4x text-warning mb-4"></i>
+                        <h3 class="text-muted">No Data Found</h3>
+                        <p class="lead text-muted">
+                            Unable to retrieve data for symbol: <strong>{{ symbol }}</strong>
+                        </p>
+                        <div class="mt-4">
+                            <a href="{{ url_for('search') }}" class="btn btn-primary btn-lg me-3">
+                                <i class="fas fa-search me-2"></i>Try Another Search
+                            </a>
+                            <a href="{{ url_for('index') }}" class="btn btn-outline-secondary btn-lg">
+                                <i class="fas fa-home me-2"></i>Back to Dashboard
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+{% if chart_data %}
+<script>
+// Initialize charts when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    const chartData = {{ chart_data|tojson }};
+    
+    // Check if stock is already being tracked
+    updateTrackButton();
+    
+    // Price Chart
+    const priceCtx = document.getElementById('priceChart').getContext('2d');
+    new Chart(priceCtx, {
+        type: 'line',
+        data: {
+            labels: chartData.labels,
+            datasets: [{
+                label: 'Price ($)',
+                data: chartData.prices,
+                borderColor: '#0d6efd',
+                backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    ticks: {
+                        callback: function(value) {
+                            return '$' + value.toFixed(2);
+                        }
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return 'Price: $' + context.parsed.y.toFixed(2);
+                        }
+                    }
+                }
+            }
+        }
+    });
+    
+    // Volume Chart
+    const volumeCtx = document.getElementById('volumeChart').getContext('2d');
+    new Chart(volumeCtx, {
+        type: 'bar',
+        data: {
+            labels: chartData.labels,
+            datasets: [{
+                label: 'Volume',
+                data: chartData.volumes,
+                backgroundColor: 'rgba(255, 193, 7, 0.6)',
+                borderColor: '#ffc107',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            if (value >= 1000000) {
+                                return (value / 1000000).toFixed(1) + 'M';
+                            } else if (value >= 1000) {
+                                return (value / 1000).toFixed(1) + 'K';
+                            }
+                            return value;
+                        }
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let value = context.parsed.y;
+                            if (value >= 1000000) {
+                                return 'Volume: ' + (value / 1000000).toFixed(1) + 'M';
+                            } else if (value >= 1000) {
+                                return 'Volume: ' + (value / 1000).toFixed(1) + 'K';
+                            }
+                            return 'Volume: ' + value.toLocaleString();
+                        }
+                    }
+                }
+            }
+        }
+    });
+});
+
+// Stock tracking functionality
+function trackStock(symbol) {
+    const savedPreferences = localStorage.getItem('stockPreferences');
+    let selectedStocks = [];
+    
+    if (savedPreferences) {
+        selectedStocks = JSON.parse(savedPreferences);
+    }
+    
+    if (selectedStocks.includes(symbol)) {
+        // Remove from tracking
+        selectedStocks = selectedStocks.filter(s => s !== symbol);
+        localStorage.setItem('stockPreferences', JSON.stringify(selectedStocks));
+        
+        // Show success message
+        showTrackMessage(`${symbol} removed from your tracked stocks.`, 'warning');
+    } else {
+        // Add to tracking
+        selectedStocks.push(symbol);
+        localStorage.setItem('stockPreferences', JSON.stringify(selectedStocks));
+        
+        // Show success message
+        showTrackMessage(`${symbol} added to your tracked stocks!`, 'success');
+    }
+    
+    updateTrackButton();
+}
+
+function updateTrackButton() {
+    const symbol = '{{ symbol }}';
+    const savedPreferences = localStorage.getItem('stockPreferences');
+    const trackBtn = document.getElementById('trackBtn');
+    
+    if (!trackBtn) return;
+    
+    let isTracked = false;
+    
+    if (savedPreferences) {
+        const selectedStocks = JSON.parse(savedPreferences);
+        isTracked = selectedStocks.includes(symbol);
+    }
+    
+    if (isTracked) {
+        trackBtn.innerHTML = '<i class="fas fa-star me-1"></i>Untrack';
+        trackBtn.className = 'btn btn-success btn-sm';
+        trackBtn.title = 'Remove from tracked stocks';
+    } else {
+        trackBtn.innerHTML = '<i class="fas fa-star me-1"></i>Track Stock';
+        trackBtn.className = 'btn btn-outline-success btn-sm';
+        trackBtn.title = 'Add to tracked stocks';
+    }
+}
+
+function showTrackMessage(message, type) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 1050; min-width: 300px;';
+    alertDiv.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    document.body.appendChild(alertDiv);
+    
+    // Auto-remove after 3 seconds
+    setTimeout(() => {
+        if (alertDiv.parentNode) {
+            alertDiv.remove();
+        }
+    }, 3000);
+}
+</script>
+{% else %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    updateTrackButton();
+});
+
+// Include the tracking functions even when no charts
+function trackStock(symbol) {
+    const savedPreferences = localStorage.getItem('stockPreferences');
+    let selectedStocks = [];
+    
+    if (savedPreferences) {
+        selectedStocks = JSON.parse(savedPreferences);
+    }
+    
+    if (selectedStocks.includes(symbol)) {
+        selectedStocks = selectedStocks.filter(s => s !== symbol);
+        localStorage.setItem('stockPreferences', JSON.stringify(selectedStocks));
+        showTrackMessage(`${symbol} removed from your tracked stocks.`, 'warning');
+    } else {
+        selectedStocks.push(symbol);
+        localStorage.setItem('stockPreferences', JSON.stringify(selectedStocks));
+        showTrackMessage(`${symbol} added to your tracked stocks!`, 'success');
+    }
+    
+    updateTrackButton();
+}
+
+function updateTrackButton() {
+    const symbol = '{{ symbol }}';
+    const savedPreferences = localStorage.getItem('stockPreferences');
+    const trackBtn = document.getElementById('trackBtn');
+    
+    if (!trackBtn) return;
+    
+    let isTracked = false;
+    
+    if (savedPreferences) {
+        const selectedStocks = JSON.parse(savedPreferences);
+        isTracked = selectedStocks.includes(symbol);
+    }
+    
+    if (isTracked) {
+        trackBtn.innerHTML = '<i class="fas fa-star me-1"></i>Untrack';
+        trackBtn.className = 'btn btn-success btn-sm';
+        trackBtn.title = 'Remove from tracked stocks';
+    } else {
+        trackBtn.innerHTML = '<i class="fas fa-star me-1"></i>Track Stock';
+        trackBtn.className = 'btn btn-outline-success btn-sm';
+        trackBtn.title = 'Add to tracked stocks';
+    }
+}
+
+function showTrackMessage(message, type) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 1050; min-width: 300px;';
+    alertDiv.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    document.body.appendChild(alertDiv);
+    
+    setTimeout(() => {
+        if (alertDiv.parentNode) {
+            alertDiv.remove();
+        }
+    }, 3000);
+}
+</script>
+{% endif %}
+{% endblock %}

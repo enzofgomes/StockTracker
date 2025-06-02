@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+
+{% block title %}Stock Tracker - Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Hero Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="hero-section bg-primary text-white p-4 rounded">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="display-6 fw-bold mb-3">Market Dashboard</h1>
+                        <p class="lead mb-0">Track your favorite stocks with real-time data and interactive charts</p>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <div class="market-time">
+                            <i class="fas fa-clock me-2"></i>
+                            <span id="current-time"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Market Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-chart-line fa-2x text-primary mb-2"></i>
+                    <h6 class="card-title">Active Stocks</h6>
+                    <h4 class="text-primary">{{ popular_stocks|length }}</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-arrow-trend-up fa-2x text-success mb-2"></i>
+                    <h6 class="card-title">Gainers</h6>
+                    <h4 class="text-success">
+                        {{ popular_stocks|selectattr('change_percent', 'gt', 0)|list|length }}
+                    </h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-arrow-trend-down fa-2x text-danger mb-2"></i>
+                    <h6 class="card-title">Losers</h6>
+                    <h4 class="text-danger">
+                        {{ popular_stocks|selectattr('change_percent', 'lt', 0)|list|length }}
+                    </h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-balance-scale fa-2x text-warning mb-2"></i>
+                    <h6 class="card-title">Unchanged</h6>
+                    <h4 class="text-warning">
+                        {{ popular_stocks|selectattr('change_percent', 'eq', 0)|list|length }}
+                    </h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popular Stocks Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow">
+                <div class="card-header bg-white border-bottom-0 py-3">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-star text-warning me-2"></i>Popular Stocks
+                            </h5>
+                        </div>
+                        <div class="col-auto">
+                            <a href="{{ url_for('preferences') }}" class="btn btn-outline-secondary btn-sm me-2">
+                                <i class="fas fa-cog me-1"></i>Customize
+                            </a>
+                            <a href="{{ url_for('search') }}" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-search me-1"></i>Advanced Search
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    {% if popular_stocks %}
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="ps-3">Symbol</th>
+                                        <th>Price</th>
+                                        <th>Change</th>
+                                        <th>Change %</th>
+                                        <th>Volume</th>
+                                        <th>High</th>
+                                        <th>Low</th>
+                                        <th class="pe-3">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for stock in popular_stocks %}
+                                    <tr class="stock-row" data-symbol="{{ stock.symbol }}">
+                                        <td class="ps-3">
+                                            <span class="fw-bold">{{ stock.symbol }}</span>
+                                        </td>
+                                        <td class="fw-semibold">
+                                            ${{ "%.2f"|format(stock.close) }}
+                                        </td>
+                                        <td class="{{ 'text-success' if stock.change_percent >= 0 else 'text-danger' }}">
+                                            {{ '+' if stock.change_percent >= 0 else '' }}${{ "%.2f"|format((stock.close * stock.change_percent / 100) if stock.change_percent else 0) }}
+                                        </td>
+                                        <td class="{{ 'text-success' if stock.change_percent >= 0 else 'text-danger' }}">
+                                            <span class="change-badge">
+                                                {{ '+' if stock.change_percent >= 0 else '' }}{{ "%.2f"|format(stock.change_percent) }}%
+                                            </span>
+                                        </td>
+                                        <td class="text-muted">
+                                            {% set volume = stock.volume %}
+                                            {% if volume >= 1000000 %}
+                                                {{ "%.1f"|format(volume / 1000000) }}M
+                                            {% elif volume >= 1000 %}
+                                                {{ "%.1f"|format(volume / 1000) }}K
+                                            {% else %}
+                                                {{ volume }}
+                                            {% endif %}
+                                        </td>
+                                        <td>${{ "%.2f"|format(stock.high) }}</td>
+                                        <td>${{ "%.2f"|format(stock.low) }}</td>
+                                        <td class="pe-3">
+                                            <a href="{{ url_for('stock_detail', symbol=stock.symbol) }}" 
+                                               class="btn btn-primary btn-sm">
+                                                <i class="fas fa-chart-area me-1"></i>View
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-exclamation-circle fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No stock data available</h5>
+                            <p class="text-muted">Unable to fetch current market data. Please try again later.</p>
+                            <a href="{{ url_for('search') }}" class="btn btn-primary">
+                                <i class="fas fa-search me-1"></i>Search Stocks Manually
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Update current time
+function updateTime() {
+    const now = new Date();
+    const options = { 
+        timeZone: 'America/New_York',
+        hour12: true,
+        hour: 'numeric',
+        minute: '2-digit',
+        second: '2-digit'
+    };
+    const timeString = now.toLocaleTimeString('en-US', options) + ' EST';
+    document.getElementById('current-time').textContent = timeString;
+}
+
+// Load user stock preferences and redirect if different
+function loadUserPreferences() {
+    const savedPreferences = localStorage.getItem('stockPreferences');
+    if (savedPreferences) {
+        const selectedStocks = JSON.parse(savedPreferences);
+        const currentUrl = new URL(window.location);
+        const currentSymbols = currentUrl.searchParams.get('symbols');
+        const newSymbols = selectedStocks.join(',');
+        
+        // Only redirect if preferences are different from current view
+        if (currentSymbols !== newSymbols && selectedStocks.length > 0) {
+            // Update URL to show user's preferred stocks
+            currentUrl.searchParams.set('symbols', newSymbols);
+            window.location.href = currentUrl.toString();
+        }
+    }
+}
+
+// Initialize dashboard
+document.addEventListener('DOMContentLoaded', function() {
+    // Load user preferences on page load (only if no symbols in URL)
+    const urlParams = new URLSearchParams(window.location.search);
+    if (!urlParams.has('symbols')) {
+        loadUserPreferences();
+    }
+    
+    // Update time every second
+    updateTime();
+    setInterval(updateTime, 1000);
+    
+    // Add hover effects to stock rows
+    document.querySelectorAll('.stock-row').forEach(row => {
+        row.addEventListener('mouseenter', function() {
+            this.style.backgroundColor = '#f8f9fa';
+        });
+        
+        row.addEventListener('mouseleave', function() {
+            this.style.backgroundColor = '';
+        });
+    });
+    
+
+});
+</script>
+{% endblock %}

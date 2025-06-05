@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="94cfeb1f-b7b6-46d2-8560-ddb14d363f09" name="Changes" comment="files pasted over v 1.0">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="94cfeb1f-b7b6-46d2-8560-ddb14d363f09" name="Changes" comment="files pasted over v 1.0" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -56,6 +54,7 @@
       <workItem from="1748889215570" duration="70000" />
       <workItem from="1748898628334" duration="5007000" />
       <workItem from="1748908476724" duration="96000" />
+      <workItem from="1748920399865" duration="546000" />
     </task>
     <task id="LOCAL-00001" summary="files pasted over v 1.0">
       <option name="closed" value="true" />

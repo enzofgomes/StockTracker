@@ -3,7 +3,16 @@
 {% block title %}{{ symbol }} - Stock Detail{% endblock %}
 
 {% block content %}
-<div class="container-fluid py-4">
+<!-- 
+    Stock Detail Page
+    Displays detailed information about a specific stock including:
+    - Current price and change
+    - Key metrics (High, Low, Open, Volume)
+    - Price and volume charts (if historical data available)
+    - Historical data table (if available)
+-->
+
+<div class="container-fluid min-vh-100 d-flex flex-column py-4">
     {% if stock_info %}
         <!-- Stock Header -->
         <div class="row mb-4">
@@ -38,10 +47,6 @@
                                        class="btn btn-outline-primary btn-sm">Latest</a>
                                     <a href="{{ url_for('stock_detail', symbol=symbol, data_type='historical') }}" 
                                        class="btn btn-outline-primary btn-sm">Historical</a>
-                                    <button type="button" class="btn btn-outline-success btn-sm" 
-                                            onclick="trackStock('{{ symbol }}')" id="trackBtn">
-                                        <i class="fas fa-star me-1"></i>Track Stock
-                                    </button>
                                     <a href="{{ url_for('search') }}" 
                                        class="btn btn-outline-secondary btn-sm">New Search</a>
                                 </div>
@@ -211,39 +216,30 @@
         {% endif %}
 
     {% else %}
-        <!-- No Data Found -->
-        <div class="row">
-            <div class="col-12">
-                <div class="card border-0 shadow">
-                    <div class="card-body text-center py-5">
-                        <i class="fas fa-exclamation-triangle fa-4x text-warning mb-4"></i>
-                        <h3 class="text-muted">No Data Found</h3>
-                        <p class="lead text-muted">
-                            Unable to retrieve data for symbol: <strong>{{ symbol }}</strong>
-                        </p>
-                        <div class="mt-4">
-                            <a href="{{ url_for('search') }}" class="btn btn-primary btn-lg me-3">
-                                <i class="fas fa-search me-2"></i>Try Another Search
-                            </a>
-                            <a href="{{ url_for('index') }}" class="btn btn-outline-secondary btn-lg">
-                                <i class="fas fa-home me-2"></i>Back to Dashboard
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <!-- 
+            Error State
+            Shown when stock data is not available
+            Provides a button to search for another stock
+        -->
+        <div class="alert alert-warning">
+            <h5>Stock Information Not Available</h5>
+            <p>Unable to fetch data for {{ symbol }}. Please try again later.</p>
+            <a href="{{ url_for('search') }}" class="btn btn-primary">Search Another Stock</a>
         </div>
     {% endif %}
 </div>
 
-{% if chart_data %}
+<!-- 
+    Chart Initialization
+    Uses Chart.js to create interactive charts
+    - Price chart with area fill
+    - Volume chart with bars
+    Only initialized if chart data is available
+-->
+{% if stock_info and chart_data %}
 <script>
-// Initialize charts when page loads
 document.addEventListener('DOMContentLoaded', function() {
     const chartData = {{ chart_data|tojson }};
-    
-    // Check if stock is already being tracked
-    updateTrackButton();
     
     // Price Chart
     const priceCtx = document.getElementById('priceChart').getContext('2d');
@@ -273,18 +269,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                     }
                 }
-            },
-            plugins: {
-                legend: {
-                    display: false
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return 'Price: $' + context.parsed.y.toFixed(2);
-                        }
-                    }
-                }
             }
         }
     });
@@ -298,7 +282,7 @@ document.addEventListener('DOMContentLoaded', function() {
             datasets: [{
                 label: 'Volume',
                 data: chartData.volumes,
-                backgroundColor: 'rgba(255, 193, 7, 0.6)',
+                backgroundColor: 'rgba(255, 193, 7, 0.5)',
                 borderColor: '#ffc107',
                 borderWidth: 1
             }]
@@ -320,171 +304,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                     }
                 }
-            },
-            plugins: {
-                legend: {
-                    display: false
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            let value = context.parsed.y;
-                            if (value >= 1000000) {
-                                return 'Volume: ' + (value / 1000000).toFixed(1) + 'M';
-                            } else if (value >= 1000) {
-                                return 'Volume: ' + (value / 1000).toFixed(1) + 'K';
-                            }
-                            return 'Volume: ' + value.toLocaleString();
-                        }
-                    }
-                }
             }
         }
     });
 });
-
-// Stock tracking functionality
-function trackStock(symbol) {
-    const savedPreferences = localStorage.getItem('stockPreferences');
-    let selectedStocks = [];
-    
-    if (savedPreferences) {
-        selectedStocks = JSON.parse(savedPreferences);
-    }
-    
-    if (selectedStocks.includes(symbol)) {
-        // Remove from tracking
-        selectedStocks = selectedStocks.filter(s => s !== symbol);
-        localStorage.setItem('stockPreferences', JSON.stringify(selectedStocks));
-        
-        // Show success message
-        showTrackMessage(`${symbol} removed from your tracked stocks.`, 'warning');
-    } else {
-        // Add to tracking
-        selectedStocks.push(symbol);
-        localStorage.setItem('stockPreferences', JSON.stringify(selectedStocks));
-        
-        // Show success message
-        showTrackMessage(`${symbol} added to your tracked stocks!`, 'success');
-    }
-    
-    updateTrackButton();
-}
-
-function updateTrackButton() {
-    const symbol = '{{ symbol }}';
-    const savedPreferences = localStorage.getItem('stockPreferences');
-    const trackBtn = document.getElementById('trackBtn');
-    
-    if (!trackBtn) return;
-    
-    let isTracked = false;
-    
-    if (savedPreferences) {
-        const selectedStocks = JSON.parse(savedPreferences);
-        isTracked = selectedStocks.includes(symbol);
-    }
-    
-    if (isTracked) {
-        trackBtn.innerHTML = '<i class="fas fa-star me-1"></i>Untrack';
-        trackBtn.className = 'btn btn-success btn-sm';
-        trackBtn.title = 'Remove from tracked stocks';
-    } else {
-        trackBtn.innerHTML = '<i class="fas fa-star me-1"></i>Track Stock';
-        trackBtn.className = 'btn btn-outline-success btn-sm';
-        trackBtn.title = 'Add to tracked stocks';
-    }
-}
-
-function showTrackMessage(message, type) {
-    const alertDiv = document.createElement('div');
-    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
-    alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 1050; min-width: 300px;';
-    alertDiv.innerHTML = `
-        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    `;
-    document.body.appendChild(alertDiv);
-    
-    // Auto-remove after 3 seconds
-    setTimeout(() => {
-        if (alertDiv.parentNode) {
-            alertDiv.remove();
-        }
-    }, 3000);
-}
-</script>
-{% else %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    updateTrackButton();
-});
-
-// Include the tracking functions even when no charts
-function trackStock(symbol) {
-    const savedPreferences = localStorage.getItem('stockPreferences');
-    let selectedStocks = [];
-    
-    if (savedPreferences) {
-        selectedStocks = JSON.parse(savedPreferences);
-    }
-    
-    if (selectedStocks.includes(symbol)) {
-        selectedStocks = selectedStocks.filter(s => s !== symbol);
-        localStorage.setItem('stockPreferences', JSON.stringify(selectedStocks));
-        showTrackMessage(`${symbol} removed from your tracked stocks.`, 'warning');
-    } else {
-        selectedStocks.push(symbol);
-        localStorage.setItem('stockPreferences', JSON.stringify(selectedStocks));
-        showTrackMessage(`${symbol} added to your tracked stocks!`, 'success');
-    }
-    
-    updateTrackButton();
-}
-
-function updateTrackButton() {
-    const symbol = '{{ symbol }}';
-    const savedPreferences = localStorage.getItem('stockPreferences');
-    const trackBtn = document.getElementById('trackBtn');
-    
-    if (!trackBtn) return;
-    
-    let isTracked = false;
-    
-    if (savedPreferences) {
-        const selectedStocks = JSON.parse(savedPreferences);
-        isTracked = selectedStocks.includes(symbol);
-    }
-    
-    if (isTracked) {
-        trackBtn.innerHTML = '<i class="fas fa-star me-1"></i>Untrack';
-        trackBtn.className = 'btn btn-success btn-sm';
-        trackBtn.title = 'Remove from tracked stocks';
-    } else {
-        trackBtn.innerHTML = '<i class="fas fa-star me-1"></i>Track Stock';
-        trackBtn.className = 'btn btn-outline-success btn-sm';
-        trackBtn.title = 'Add to tracked stocks';
-    }
-}
-
-function showTrackMessage(message, type) {
-    const alertDiv = document.createElement('div');
-    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
-    alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 1050; min-width: 300px;';
-    alertDiv.innerHTML = `
-        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    `;
-    document.body.appendChild(alertDiv);
-    
-    setTimeout(() => {
-        if (alertDiv.parentNode) {
-            alertDiv.remove();
-        }
-    }, 3000);
-}
 </script>
 {% endif %}
 {% endblock %}

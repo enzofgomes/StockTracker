@@ -58,26 +58,6 @@ def get_all_available_stocks() -> List[Dict[str, str]]:
         {'symbol': 'JPM', 'name': 'JPMorgan Chase & Co.'},
         {'symbol': 'JNJ', 'name': 'Johnson & Johnson'},
         {'symbol': 'V', 'name': 'Visa Inc.'},
-        {'symbol': 'PG', 'name': 'Procter & Gamble Company'},
-        {'symbol': 'MA', 'name': 'Mastercard Incorporated'},
-        {'symbol': 'UNH', 'name': 'UnitedHealth Group'},
-        {'symbol': 'HD', 'name': 'Home Depot Inc.'},
-        {'symbol': 'BAC', 'name': 'Bank of America Corporation'},
-        {'symbol': 'DIS', 'name': 'Walt Disney Company'},
-        {'symbol': 'NFLX', 'name': 'Netflix Inc.'},
-        {'symbol': 'ADBE', 'name': 'Adobe Inc.'},
-        {'symbol': 'CRM', 'name': 'Salesforce Inc.'},
-        {'symbol': 'PYPL', 'name': 'PayPal Holdings Inc.'},
-        {'symbol': 'INTC', 'name': 'Intel Corporation'},
-        {'symbol': 'AMD', 'name': 'Advanced Micro Devices'},
-        {'symbol': 'IBM', 'name': 'International Business Machines'},
-        {'symbol': 'ORCL', 'name': 'Oracle Corporation'},
-        {'symbol': 'WMT', 'name': 'Walmart Inc.'},
-        {'symbol': 'KO', 'name': 'Coca-Cola Company'},
-        {'symbol': 'PEP', 'name': 'PepsiCo Inc.'},
-        {'symbol': 'NKE', 'name': 'Nike Inc.'},
-        {'symbol': 'MCD', 'name': 'McDonald\'s Corporation'},
-        {'symbol': 'SBUX', 'name': 'Starbucks Corporation'}
     ]
 
 def safe_float(value, default=0.0):

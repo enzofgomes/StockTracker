@@ -3,48 +3,58 @@
 {% block title %}Stock Preferences{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-12">
-        <h2 class="text-center mb-4">Stock Preferences</h2>
-        <p class="text-center text-muted">Choose stocks to track on your dashboard</p>
-    </div>
-</div>
+<!-- 
+    Stock Preferences Page
+    Purpose: Allows users to customize which stocks they want to track on their dashboard.
+    Features:
+    - Add/remove stocks using stock symbols
+    - Save preferences to browser storage
+    - Simple interface for managing stock list
+-->
 
-<!-- Centered Search Bar -->
-<div class="row mb-4">
-    <div class="col-md-6 mx-auto">
-        <div class="card">
-            <div class="card-body">
-                <h6 class="text-center mb-3">Add New Stock</h6>
-                <div class="input-group">
-                    <input type="text" class="form-control" id="stockSearch" 
-                           placeholder="Enter stock symbol (e.g., AAPL)" onkeypress="handleSearchKeypress(event)">
-                    <button class="btn btn-primary" type="button" onclick="addStock()">Add Stock</button>
+<!-- Add min-height to ensure footer stays at bottom -->
+<div class="container-fluid min-vh-100 d-flex flex-column">
+    <div class="row flex-grow-1">
+        <div class="col-12 my-auto">
+            <h2 class="text-center mb-4">Stock Preferences</h2>
+            <p class="text-center text-muted">Choose stocks to track on your dashboard</p>
+
+            <!-- Centered Search Bar -->
+            <div class="row mb-4">
+                <div class="col-md-6 mx-auto">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="text-center mb-3">Add New Stock</h6>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="stockSearch" 
+                                       placeholder="Enter stock symbol (e.g., AAPL)" onkeypress="handleSearchKeypress(event)">
+                                <button class="btn btn-primary" type="button" onclick="addStock()">Add Stock</button>
+                            </div>
+                            <div class="form-text text-center">Enter any valid stock symbol to add to your tracker</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-text text-center">Enter any valid stock symbol to add to your tracker</div>
             </div>
-        </div>
-    </div>
-</div>
 
-
-
-<!-- Selected Stocks Display -->
-<div class="row">
-    <div class="col-md-8 mx-auto">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0">Selected Stocks</h5>
-            </div>
-            <div class="card-body">
-                <div id="selectedStocksList">
-                    <p class="text-muted text-center">No stocks selected yet. Add some stocks to your tracker!</p>
-                </div>
-                
-                <div class="text-center mt-4">
-                    <button class="btn btn-success me-2" onclick="savePreferences()">Save Preferences</button>
-                    <button class="btn btn-outline-danger me-2" onclick="clearAllStocks()">Clear All</button>
-                    <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">Back to Home</a>
+            <!-- Selected Stocks Display -->
+            <div class="row">
+                <div class="col-md-8 mx-auto">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Selected Stocks</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="selectedStocksList">
+                                <p class="text-muted text-center">No stocks selected yet. Add some stocks to your tracker!</p>
+                            </div>
+                            
+                            <div class="text-center mt-4">
+                                <button class="btn btn-success me-2" onclick="savePreferences()">Save Preferences</button>
+                                <button class="btn btn-outline-danger me-2" onclick="clearAllStocks()">Clear All</button>
+                                <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">Back to Home</a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -52,15 +62,16 @@
 </div>
 
 <script>
-// Simple localStorage-based stock tracking for student project
+// Store selected stocks in memory
 let selectedStocks = [];
 
-// Load saved preferences on page load
+// Load saved preferences when page loads
 document.addEventListener('DOMContentLoaded', function() {
     loadSavedPreferences();
     updateSelectedStocksList();
 });
 
+// Load stocks from browser storage
 function loadSavedPreferences() {
     const saved = localStorage.getItem('stockPreferences');
     if (saved) {
@@ -68,12 +79,14 @@ function loadSavedPreferences() {
     }
 }
 
+// Handle Enter key in search input
 function handleSearchKeypress(event) {
     if (event.key === 'Enter') {
         addStock();
     }
 }
 
+// Add a new stock to the list
 function addStock() {
     const input = document.getElementById('stockSearch');
     const symbol = input.value.trim().toUpperCase();
@@ -95,14 +108,14 @@ function addStock() {
     showMessage(symbol + ' added to your tracker!', 'success');
 }
 
-
-
+// Remove a stock from the list
 function removeStock(symbol) {
     selectedStocks = selectedStocks.filter(s => s !== symbol);
     updateSelectedStocksList();
     showMessage(symbol + ' removed from your tracker', 'warning');
 }
 
+// Clear all stocks from the list
 function clearAllStocks() {
     if (selectedStocks.length === 0) {
         showMessage('No stocks to clear', 'info');
@@ -114,6 +127,7 @@ function clearAllStocks() {
     showMessage('All stocks cleared from your tracker', 'warning');
 }
 
+// Update the display of selected stocks
 function updateSelectedStocksList() {
     const container = document.getElementById('selectedStocksList');
     
@@ -122,14 +136,13 @@ function updateSelectedStocksList() {
         return;
     }
     
-    let html = '<div class="row">';
+    // Create a simple list instead of a grid for better readability
+    let html = '<div class="list-group">';
     selectedStocks.forEach(symbol => {
         html += `
-            <div class="col-md-6 mb-2">
-                <div class="d-flex justify-content-between align-items-center border rounded p-2">
-                    <span><strong>${symbol}</strong></span>
-                    <button class="btn btn-outline-danger btn-sm" onclick="removeStock('${symbol}')">Remove</button>
-                </div>
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <span><strong>${symbol}</strong></span>
+                <button class="btn btn-outline-danger btn-sm" onclick="removeStock('${symbol}')">Remove</button>
             </div>
         `;
     });
@@ -138,6 +151,7 @@ function updateSelectedStocksList() {
     container.innerHTML = html;
 }
 
+// Save current stock list to browser storage
 function savePreferences() {
     if (selectedStocks.length === 0) {
         showMessage('Please select at least one stock to save', 'warning');
@@ -148,6 +162,7 @@ function savePreferences() {
     showMessage('Preferences saved successfully! (' + selectedStocks.length + ' stocks)', 'success');
 }
 
+// Show a temporary message to the user
 function showMessage(message, type) {
     // Remove any existing message
     const existingMessage = document.querySelector('.alert-message');
@@ -155,7 +170,7 @@ function showMessage(message, type) {
         existingMessage.remove();
     }
     
-    // Create new message
+    // Create and show new message
     const alertDiv = document.createElement('div');
     alertDiv.className = `alert alert-${type} alert-dismissible fade show alert-message mt-3`;
     alertDiv.innerHTML = `
@@ -163,11 +178,11 @@ function showMessage(message, type) {
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     `;
     
-    // Insert at top of page
+    // Add message to page
     const container = document.querySelector('.row');
     container.parentNode.insertBefore(alertDiv, container);
     
-    // Auto-remove after 3 seconds
+    // Remove message after 3 seconds
     setTimeout(() => {
         if (alertDiv.parentNode) {
             alertDiv.remove();

@@ -1,8 +1,14 @@
+<!-- 
+    Base Template for Stock Tracker Application
+    This will serve as the foundation for all pages in the application. 
+-->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Dynamic page title - can be overridden by child templates -->
     <title>{% block title %}Stock Tracker - Yahoo Finance Style{% endblock %}</title>
     
     <!-- Bootstrap CSS -->
@@ -18,52 +24,65 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <!-- 
+        Navigation Bar
+        Contains:
+        - Application logo/brand
+        - Main navigation links
+        - Quick search form
+    -->
+    <nav class="navbar navbar-dark bg-dark">
         <div class="container">
+            <!-- Brand/Logo with icon -->
             <a class="navbar-brand fw-bold" href="{{ url_for('index') }}">
                 <i class="fas fa-chart-line me-2"></i>Stock Tracker
             </a>
             
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
+            <!-- Navigation menu items -->
+            <div>
+                <ul class="navbar-nav d-flex flex-row">
+                    <!-- Dashboard link -->
+                    <li class="nav-item me-3">
                         <a class="nav-link" href="{{ url_for('index') }}">
                             <i class="fas fa-home me-1"></i>Dashboard
                         </a>
                     </li>
-                    <li class="nav-item">
+                    <!-- Advanced Search link -->
+                    <li class="nav-item me-3">
                         <a class="nav-link" href="{{ url_for('search') }}">
                             <i class="fas fa-search me-1"></i>Advanced Search
                         </a>
                     </li>
-                    <li class="nav-item">
+                    <!-- Preferences link -->
+                    <li class="nav-item me-3">
                         <a class="nav-link" href="{{ url_for('preferences') }}">
                             <i class="fas fa-cog me-1"></i>Preferences
                         </a>
                     </li>
                 </ul>
-                
-                <!-- Quick search form -->
-                <form class="d-flex" method="POST" action="{{ url_for('quick_search') }}">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                    <div class="input-group">
-                        <input class="form-control" type="search" name="symbol" placeholder="Enter symbol..." 
-                               aria-label="Search" style="max-width: 200px;">
-                        <button class="btn btn-outline-light" type="submit">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </div>
-                </form>
             </div>
+            
+            <!-- Quick search form -->
+            <form class="d-flex" method="POST" action="{{ url_for('quick_search') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <div class="input-group">
+                    <input class="form-control" type="search" name="symbol" placeholder="Enter symbol..." 
+                           aria-label="Search" style="max-width: 200px;">
+                    <button class="btn btn-outline-light" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </form>
         </div>
     </nav>
 
-    <!-- Flash Messages -->
+    <!-- 
+        Flash Messages
+        Displays system messages to users:
+        - Success messages (info)
+        - Error messages (danger)
+        - Dismissible alerts
+    -->
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             <div class="container mt-3">

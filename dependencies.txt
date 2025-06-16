@@ -1,7 +1,0 @@
-pip install requests
-pip install Flask Flask-WTF WTForms[email] requests python-dotenv
-pip install yfinance
-
-
-run:
-python app.py

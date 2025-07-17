@@ -3,39 +3,59 @@
 {% block title %}Stock Search{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-6 mx-auto">
-        <h2 class="text-center mb-4">Stock Search</h2>
-        
-        <div class="card">
-            <div class="card-body">
-                <form method="POST">
-                    {{ form.hidden_tag() }}
+<!-- 
+    Stock Search Page
+    A simple form to search for stock information.
+    Features:
+    - Search by stock symbol
+    - Choose between latest or historical data
+    - Optional exchange filter
+    - Form validation and error handling
+-->
+
+<!-- Add min-height to ensure footer stays at bottom -->
+<div class="container-fluid min-vh-100 d-flex flex-column">
+    <div class="row flex-grow-1">
+        <div class="col-md-6 mx-auto my-auto">
+            <h2 class="text-center mb-4">Stock Search</h2>
+            
+            <!-- Search Form Card -->
+            <div class="card">
+                <div class="card-body">
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        
+                        <!-- Stock Symbol Input -->
+                        <div class="mb-3">
+                            {{ form.symbol.label(class="form-label") }}
+                            {{ form.symbol(class="form-control", placeholder="e.g., AAPL") }}
+                            <div class="form-text">Enter a stock symbol like AAPL, GOOGL, MSFT</div>
+                        </div>
+                        
+                        <!-- Data Type Selection -->
+                        <div class="mb-3">
+                            {{ form.data_type.label(class="form-label") }}
+                            {{ form.data_type(class="form-select") }}
+                            <div class="form-text">Choose between current price or historical data</div>
+                        </div>
+                        
+                        <!-- Exchange Filter (Optional) -->
+                        <div class="mb-3">
+                            {{ form.exchange.label(class="form-label") }}
+                            {{ form.exchange(class="form-select") }}
+                            <div class="form-text">Optional: Filter by specific stock exchange</div>
+                        </div>
+                        
+                        <!-- Submit Button -->
+                        <div class="d-grid">
+                            {{ form.submit(class="btn btn-primary") }}
+                        </div>
+                    </form>
                     
-                    <div class="mb-3">
-                        {{ form.symbol.label(class="form-label") }}
-                        {{ form.symbol(class="form-control") }}
-                        <div class="form-text">Enter a stock symbol like AAPL, GOOGL, MSFT</div>
+                    <!-- Navigation -->
+                    <div class="text-center mt-3">
+                        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">Back to Home</a>
                     </div>
-                    
-                    <div class="mb-3">
-                        {{ form.data_type.label(class="form-label") }}
-                        {{ form.data_type(class="form-select") }}
-                    </div>
-                    
-                    <div class="mb-3">
-                        {{ form.exchange.label(class="form-label") }}
-                        {{ form.exchange(class="form-select") }}
-                        <div class="form-text">Optional: Filter by specific stock exchange</div>
-                    </div>
-                    
-                    <div class="d-grid">
-                        {{ form.submit(class="btn btn-primary") }}
-                    </div>
-                </form>
-                
-                <div class="text-center mt-3">
-                    <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">Back to Home</a>
                 </div>
             </div>
         </div>

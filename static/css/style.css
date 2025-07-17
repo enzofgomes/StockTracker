@@ -1,142 +1,149 @@
-/* Yahoo Finance-inspired CSS styling */
+/* This will be a Yahoo Finance-inspired CSS styling for the website */
 
 :root {
-    --primary-blue: #0d6efd;
-    --success-green: #198754;
-    --danger-red: #dc3545;
-    --warning-yellow: #ffc107;
-    --light-gray: #f8f9fa;
-    --dark-gray: #6c757d;
-    --background: 210 11% 98%; /* #F5F7FA */
-    --card-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-    --border-radius: 0.375rem;
+    --primary-blue: #0d6efd;    /* Main color - used for buttons and links */
+    --success-green: #198754;   /* Color for positive changes and success messages */
+    --danger-red: #dc3545;      /* Color for negative changes and error messages */
+    --warning-yellow: #ffc107;  /* Color for warnings and alerts */
+    --light-gray: #f8f9fa;      /* Light background color for hover states */
+    --dark-gray: #6c757d;       /* Dark text color for secondary information */
+    --background: 210 11% 98%;  /* Main background color (light blue-gray) */
+    --card-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);  /* Shadow for cards */
+    --border-radius: 0.375rem;  /* Standard rounded corners for elements */
 }
 
 body {
-    background-color: hsl(var(--background));
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    line-height: 1.6;
+    background-color: hsl(var(--background));  /* Uses the background variable */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;  /* Modern, readable font stack */
+    line-height: 1.6;  /* Comfortable line spacing for better readability */
 }
 
-/* Navigation Enhancements */
+/* Navigation Bar Styling*/
 .navbar-brand {
-    font-size: 1.5rem;
-    font-weight: 700;
+    font-size: 1.5rem;    /* Larger text for the app name */
+    font-weight: 700;     /* Bold text to make it stand out */
 }
 
 .navbar-nav .nav-link {
-    font-weight: 500;
-    transition: color 0.3s ease;
+    font-weight: 500;     /* Medium weight for better readability */
+    transition: color 0.3s ease;  /* Smooth color change on hover */
 }
 
 .navbar-nav .nav-link:hover {
-    color: #ffffff !important;
+    color: #ffffff !important;  /* White text on hover for better contrast */
 }
 
-/* Hero Section */
+/* 
+ * Hero Section
+ * The main page banner at the top of the page
+ */
 .hero-section {
-    background: linear-gradient(135deg, var(--primary-blue), #4dabf7);
+    background: var(--primary-blue);  /* Solid background color instead of gradient */
     border-radius: var(--border-radius);
     margin-bottom: 2rem;
 }
 
 .market-time {
-    font-size: 1.1rem;
-    font-weight: 500;
+    font-size: 1.1rem;    /* Slightly larger text for market time */
+    font-weight: 500;     /* Medium weight for better visibility */
 }
 
-/* Card Enhancements */
+/* 
+ * Card Components
+ * Styling for the card elements that display stock information
+ */
 .card {
     border-radius: var(--border-radius);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: var(--card-shadow);
 }
 
 .card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    background-color: var(--light-gray);  /* Simple hover effect */
 }
 
 .card-header {
-    border-radius: var(--border-radius) var(--border-radius) 0 0 !important;
-    font-weight: 600;
+    border-radius: var(--border-radius) var(--border-radius) 0 0 !important;  /* Rounded top corners */
+    font-weight: 600;  /* Semi-bold text for headers */
 }
 
 /* Stock Table Styling */
 .table th {
-    font-weight: 600;
-    color: var(--dark-gray);
-    border-bottom: 2px solid #dee2e6;
-    padding: 0.75rem;
+    font-weight: 600;  /* Bold headers */
+    color: var(--dark-gray);  /* Dark gray color for headers */
+    border-bottom: 2px solid #dee2e6;  /* Thicker bottom border */
+    padding: 0.75rem;  /* Comfortable padding */
 }
 
 .table td {
-    padding: 0.75rem;
-    vertical-align: middle;
+    padding: 0.75rem;  /* Consistent padding */
+    vertical-align: middle;  /* Center content vertically */
 }
 
 .stock-row {
-    cursor: pointer;
-    transition: background-color 0.2s ease;
+    cursor: pointer;  /* Hand cursor on hoverable rows */
+    transition: background-color 0.2s ease;  /* Smooth background change */
 }
 
 .stock-row:hover {
-    background-color: var(--light-gray) !important;
+    background-color: var(--light-gray) !important;  /* Light gray background on hover */
 }
 
-/* Change Indicators */
+/* 
+ * Price Change Indicators
+ * Styling for showing positive and negative changes
+ */
 .change-badge {
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.25rem;
-    font-weight: 600;
-    font-size: 0.875rem;
+    padding: 0.25rem 0.5rem;  /* Compact padding */
+    border-radius: 0.25rem;   /* Slightly rounded corners */
+    font-weight: 600;         /* Bold text */
+    font-size: 0.875rem;      /* Slightly smaller text */
 }
 
 .text-success {
-    color: var(--success-green) !important;
+    color: var(--success-green) !important;  /* Green for positive changes */
 }
 
 .text-danger {
-    color: var(--danger-red) !important;
+    color: var(--danger-red) !important;     /* Red for negative changes */
 }
 
 .change-indicator {
-    font-size: 1.1rem;
+    font-size: 1.1rem;  /* larger text for changes */
 }
 
 /* Form Styling */
 .form-control,
 .form-select {
-    border-radius: var(--border-radius);
-    border: 1px solid #ced4da;
-    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    border-radius: var(--border-radius);  /* Rounded corners */
+    border: 1px solid #ced4da;  /* Light gray border */
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;  /* Smooth focus effect */
 }
 
 .form-control:focus,
 .form-select:focus {
-    border-color: var(--primary-blue);
-    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    border-color: var(--primary-blue);  /* Blue border when focused */
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);  /* Subtle blue glow */
 }
 
 .form-control-lg {
-    font-size: 1.1rem;
-    padding: 0.75rem 1rem;
+    font-size: 1.1rem;  /* Larger text for big inputs */
+    padding: 0.75rem 1rem;  /* More padding for better touch targets */
 }
 
 .form-label {
-    color: #495057;
-    margin-bottom: 0.5rem;
+    color: #495057;  /* Dark gray text */
+    margin-bottom: 0.5rem;  /* Space below labels */
 }
 
 .form-text {
-    color: var(--dark-gray);
-    font-size: 0.875rem;
+    color: var(--dark-gray);  /* Gray text for help text */
+    font-size: 0.875rem;      /* Smaller text for secondary information */
 }
 
 /* Button Enhancements */
 .btn {
     font-weight: 500;
     border-radius: var(--border-radius);
-    transition: all 0.2s ease;
 }
 
 .btn-primary {
@@ -145,56 +152,61 @@ body {
 }
 
 .btn-primary:hover {
-    background-color: #0b5ed7;
+    background-color: #0b5ed7;  /* Simpler hover effect */
     border-color: #0a58ca;
-    transform: translateY(-1px);
 }
 
 .btn-lg {
-    padding: 0.75rem 1.5rem;
-    font-size: 1.1rem;
+    padding: 0.75rem 1.5rem;  /* Larger padding for big buttons */
+    font-size: 1.1rem;        /* Larger text */
 }
 
-/* Chart Container */
+/* 
+ * Chart Container
+ * Styling for the stock price charts
+ */
 .chart-container {
-    background: white;
-    border-radius: var(--border-radius);
-    padding: 1rem;
+    background: white;  /* White background */
+    border-radius: var(--border-radius);  /* Rounded corners */
+    padding: 1rem;  /* Comfortable padding */
 }
 
-/* Responsive Design */
+/* 
+ * Responsive Design
+ * Adjusts the layout for different screen sizes
+ */
 @media (max-width: 768px) {
     .hero-section {
-        text-align: center;
+        text-align: center;  /* Center content on mobile */
     }
     
     .market-time {
-        margin-top: 1rem;
+        margin-top: 1rem;  /* Space above market time on mobile */
     }
     
     .display-6 {
-        font-size: 2rem;
+        font-size: 2rem;  /* Smaller text on mobile */
     }
     
     .table-responsive {
-        font-size: 0.875rem;
+        font-size: 0.875rem;  /* Smaller text for tables on mobile */
     }
     
     .btn-group {
         display: flex;
-        flex-direction: column;
+        flex-direction: column;  /* Stack buttons vertically on mobile */
         width: 100%;
     }
     
     .btn-group .btn {
-        margin-bottom: 0.25rem;
+        margin-bottom: 0.25rem;  /* Space between stacked buttons */
     }
 }
 
 /* Loading States */
 .loading {
-    opacity: 0.6;
-    pointer-events: none;
+    opacity: 0.6;  /* Fade out content while loading */
+    pointer-events: none;  /* Disable interaction while loading */
 }
 
 .loading::after {
@@ -205,52 +217,52 @@ body {
     width: 20px;
     height: 20px;
     margin: -10px 0 0 -10px;
-    border: 2px solid #f3f3f3;
-    border-top: 2px solid var(--primary-blue);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
+    border: 2px solid #f3f3f3;  /* Light gray border */
+    border-top: 2px solid var(--primary-blue);  /* Blue spinning part */
+    border-radius: 50%;  /* Circular spinner */
+    animation: spin 1s linear infinite;  /* Continuous spinning animation */
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% { transform: rotate(0deg); }    /* Start position */
+    100% { transform: rotate(360deg); } /* End position (full rotation) */
 }
 
 /* Alert Styling */
 .alert {
-    border-radius: var(--border-radius);
-    border: none;
-    font-weight: 500;
+    border-radius: var(--border-radius);  /* Rounded corners */
+    border: none;  /* No border */
+    font-weight: 500;  /* Medium weight text */
 }
 
 .alert-danger {
-    background-color: #f8d7da;
-    color: #721c24;
+    background-color: #f8d7da;  /* Light red background */
+    color: #721c24;  /* Dark red text */
 }
 
 .alert-info {
-    background-color: #d1ecf1;
-    color: #0c5460;
+    background-color: #d1ecf1;  /* Light blue background */
+    color: #0c5460;  /* Dark blue text */
 }
 
 /* Footer */
 footer {
     margin-top: auto;
-    background: linear-gradient(135deg, #212529, #495057) !important;
+    background: #212529 !important;  /* Solid background instead of gradient */
 }
 
 footer a {
-    text-decoration: none;
-    transition: color 0.3s ease;
+    text-decoration: none;  /* No underline on links */
+    transition: color 0.3s ease;  /* Smooth color change on hover */
 }
 
 footer a:hover {
-    color: var(--primary-blue) !important;
+    color: var(--primary-blue) !important;  /* Blue text on hover */
 }
 
-/* Icon Enhancements */
+/* Icon Styling */
 .fa-chart-line {
-    color: var(--primary-blue);
+    color: var(--primary-blue);  /* Simple color instead of animation */
 }
 
 .fa-arrow-trend-up {
@@ -262,64 +274,12 @@ footer a:hover {
 }
 
 .fa-balance-scale {
-    color: var(--warning-yellow);
+    color: var(--dark-gray);
 }
 
 /* Accessibility */
 .btn:focus,
 .form-control:focus,
 .form-select:focus {
-    outline: none;
-    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
-}
-
-/* Print Styles */
-@media print {
-    .navbar,
-    .btn,
-    footer {
-        display: none !important;
-    }
-    
-    .card {
-        box-shadow: none !important;
-        border: 1px solid #dee2e6 !important;
-    }
-}
-
-/* Animation Classes */
-.fade-in {
-    animation: fadeIn 0.5s ease-in;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.slide-up {
-    animation: slideUp 0.3s ease-out;
-}
-
-@keyframes slideUp {
-    from { transform: translateY(10px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
-
-/* Custom scrollbar */
-::-webkit-scrollbar {
-    width: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: #f1f1f1;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8;
+    outline: 2px solid var(--primary-blue);  /* Simpler focus style */
 }

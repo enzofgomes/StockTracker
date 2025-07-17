@@ -6,7 +6,7 @@ from utils import format_currency, format_percentage, get_popular_stocks, get_al
 import logging
 from datetime import datetime
 
-# Initialize API client
+# Initialize API client for Yahoo Finance
 api_client = YFinanceAPI()
 
 @app.route('/')
@@ -83,8 +83,8 @@ def stock_detail(symbol):
         if data_type == 'latest':
             # Get current stock price
             stock_info = api_client.get_latest_price(symbol)
-            # Also get some historical data for chart
-            historical_data = api_client.get_historical_data(symbol, limit=30)
+            # Get 5 days of historical data for chart
+            historical_data = api_client.get_historical_data(symbol, limit=5)
             
         elif data_type == 'historical':
             # Get 30 days of historical data
@@ -142,39 +142,6 @@ def quick_search():
     flash('Please enter a valid stock symbol', 'error')
     return redirect(url_for('index'))
 
-@app.route('/favorites')
-def favorites():
-    """Simple favorites page with popular stocks"""
-    # For beginners, use a simple predefined list
-    favorite_symbols = ['AAPL', 'GOOGL', 'MSFT', 'TSLA', 'AMZN']
-    
-    favorites_data = []
-    stock_data = api_client.get_multiple_symbols(favorite_symbols)
-    
-    if stock_data:
-        for stock in stock_data:
-            try:
-                symbol = stock.get('symbol', 'N/A')
-                current_price = stock.get('price', 0)
-                previous_close = stock.get('previous_close', current_price)
-                
-                if previous_close and previous_close != 0:
-                    change_percent = ((current_price - previous_close) / previous_close) * 100
-                else:
-                    change_percent = 0.0
-                
-                favorites_data.append({
-                    'symbol': symbol,
-                    'price': current_price,
-                    'change_percent': change_percent,
-                    'volume': stock.get('volume', 0)
-                })
-            except Exception as e:
-                logging.error(f"Error processing favorite stock data: {e}")
-                continue
-    
-    return render_template('favorites.html', favorites=favorites_data)
-
 @app.route('/preferences')
 def preferences():
     """Simple preferences page for stock selection"""
@@ -192,13 +159,3 @@ def api_stock_data(symbol):
     except Exception as e:
         logging.error(f"API error for {symbol}: {str(e)}")
         return jsonify({'error': str(e)}), 500
-
-
-
-@app.errorhandler(404)
-def not_found_error(error):
-    return render_template('404.html'), 404
-
-@app.errorhandler(500)
-def internal_error(error):
-    return render_template('500.html'), 500

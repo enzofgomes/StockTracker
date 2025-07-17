@@ -10,6 +10,7 @@ class YFinanceAPI:
     """Handler for Yahoo Finance API integration using yfinance"""
     
     def __init__(self):
+        """Initialize the API client with empty cache"""
         self._cache = {}
         self._cache_timeout = 300  # 5 minutes cache
         
@@ -86,9 +87,9 @@ class YFinanceAPI:
             if date_from and date_to:
                 hist = ticker.history(start=date_from, end=date_to)
             else:
-                # Default to last 30 days
+                # Add extra days to account for weekends/holidays
                 end_date = datetime.now()
-                start_date = end_date - timedelta(days=limit)
+                start_date = end_date - timedelta(days=limit * 2)  # Request more days to ensure we get enough trading days
                 hist = ticker.history(start=start_date, end=end_date)
             
             if hist.empty:
@@ -111,6 +112,7 @@ class YFinanceAPI:
             # Sort by date descending (most recent first)
             historical_data.sort(key=lambda x: x['date'], reverse=True)
             
+            # Return exactly the number of days requested
             return historical_data[:limit]
             
         except Exception as e:

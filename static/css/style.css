@@ -1,7 +1,7 @@
 /* This will be a Yahoo Finance-inspired CSS styling for the website */
 
 :root {
-    --primary-blue: #0d6efd;    /* Main color - used for buttons and links */
+    --primary-blue: #54c18e;    /* Main color - used for buttons and links */
     --success-green: #198754;   /* Color for positive changes and success messages */
     --danger-red: #dc3545;      /* Color for negative changes and error messages */
     --warning-yellow: #ffc107;  /* Color for warnings and alerts */
@@ -152,8 +152,8 @@ body {
 }
 
 .btn-primary:hover {
-    background-color: #0b5ed7;  /* Simpler hover effect */
-    border-color: #0a58ca;
+    background-color: #8edabe;  /* Simpler hover effect */
+    border-color: #8edabe;
 }
 
 .btn-lg {

@@ -1,5 +1,3 @@
-Hello Professor Greg! I hope all is well
-
 This is my flask Web Application, it is a simple Stock Tracker website that uses the Yahoo finance API to 
 deliver Detailed Stock info for the user
 
@@ -24,6 +22,3 @@ python app.py
 Project will run on:
 http://127.0.0.1:5000
 http://192.168.4.85:5000
-
-Youtube link for the presentation:
-https://www.youtube.com/watch?v=UC9IVcQXsbU
